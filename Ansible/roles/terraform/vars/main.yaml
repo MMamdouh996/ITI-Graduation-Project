@@ -1,0 +1,13 @@
+status: present
+s3_bucket_name: terraform-ansible-s3-bucket-mm-2023
+s3_bucket_region: us-east-1
+s3_bucket_acl: private
+
+table_name: terraform-ansible-DynamoDB-table-mm-2023
+table_region: us-east-1
+# hash_key_name:
+# hash_key_type:
+partition_key_name: LockID
+partition_key_type: STRING
+read_capacity_units: 5
+write_capacity_units: 5

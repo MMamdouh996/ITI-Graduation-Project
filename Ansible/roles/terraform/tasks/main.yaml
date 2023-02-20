@@ -1,0 +1,39 @@
+- name: Creating s3 bucket
+  amazon.aws.s3_bucket:
+    name: "{{ s3_bucket_name }}"
+    region: "{{ s3_bucket_region }}"
+    acl: "{{ s3_bucket_acl }}"
+    versioning: true
+    public_access:
+      block_public_acls: false
+      block_public_policy: false
+      ignore_public_acls: false
+      restrict_public_buckets: false
+    state: "{{ status }}"
+  register: s3_bucket
+
+- name: Show bucket details
+  debug:
+    var: s3_bucket
+
+# - name: Creating s3 bucket
+#   amazon.aws.s3_bucket:
+#     name: teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeewqe
+#     state: absent
+#-------------------DynamoDB Table to Manage Statelock-------------#
+- name: Create DynamoDB table
+  community.aws.dynamodb_table:
+    name: "{{ table_name }}"
+    region: "{{ table_region }}"
+    hash_key_name: "{{ partition_key_name }}"
+    hash_key_type: "{{ partition_key_type }}"
+    # partition_key_name: "{{ partition_key_name }}"
+    # partition_key_type: "{{ partition_key_type }}"
+    read_capacity: "{{ read_capacity_units }}"
+    write_capacity: "{{ write_capacity_units }}"    
+    state: "{{ status }}"
+  register: dynamodb_table
+
+- name: Show table details
+  debug:
+    var: dynamodb_table

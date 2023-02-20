@@ -1,0 +1,8 @@
+# Ansbile playbook to create S3 Bucket and DynamoDB table to manage statelock and tfstate
+#----------------------------------------------------------------------------------------#
+- name: Manage Terraform statelock and tfstate file
+  hosts: localhost
+  gather_facts: no
+
+  roles:
+    - roles/terraform
