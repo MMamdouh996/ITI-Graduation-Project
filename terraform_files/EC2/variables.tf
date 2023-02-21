@@ -21,3 +21,6 @@ variable "instance_name" {
 
 }
 
+variable "role_name" {
+  default = ""
+}

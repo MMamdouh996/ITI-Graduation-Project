@@ -25,3 +25,12 @@ variable "NG_subnets_ids" {
 variable "NG_dependant" {
 
 }
+variable "cluster_SG" {
+
+}
+variable "endpoint_private_access" {
+  
+}
+variable "endpoint_public_access" {
+  
+}

@@ -3,11 +3,8 @@ resource "aws_subnet" "subnet-GP" {
   cidr_block              = var.subnet_cidr
   availability_zone       = var.subnet_AZ
   map_public_ip_on_launch = var.auto_assign_public_ip_state
-  tags = {
-    Name                        = var.subnet_name
-    "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb"    = 1
-  }
+  tags                    = var.tags
+
 }
 
 resource "aws_route_table_association" "route_table_association" {

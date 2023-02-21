@@ -15,20 +15,28 @@ module "public-subnet-1" {
   vpc-id                            = module.network.vpc-id
   subnet_cidr                       = "10.1.0.0/24"
   subnet_AZ                         = "us-east-1a"
-  subnet_name                       = "public-subnet-1"
   route_table_id                    = module.network.igw-route-table-id
   route_table_association_dependant = [module.network.igw-route-table-id]
   auto_assign_public_ip_state       = true
+  tags = {
+    Name                               = "public-subnet-1"
+    "kubernetes.io/cluster/gp-cluster" = "shared"
+    "kubernetes.io/role/elb"           = 1
+  }
 }
 module "public-subnet-2" {
   source                            = "./Subnets"
   vpc-id                            = module.network.vpc-id
   subnet_cidr                       = "10.1.1.0/24"
   subnet_AZ                         = "us-east-1b"
-  subnet_name                       = "public-subnet-2"
   route_table_id                    = module.network.igw-route-table-id
   route_table_association_dependant = [module.network.igw-route-table-id]
   auto_assign_public_ip_state       = true
+  tags = {
+    Name                               = "public-subnet-2"
+    "kubernetes.io/cluster/gp-cluster" = "shared"
+    "kubernetes.io/role/elb"           = 1
+  }
 }
 
 module "private-nat-subnet-1" {
@@ -36,10 +44,14 @@ module "private-nat-subnet-1" {
   vpc-id                            = module.network.vpc-id
   subnet_cidr                       = "10.1.2.0/24"
   subnet_AZ                         = "us-east-1a"
-  subnet_name                       = "private-nat-subnet-1"
   route_table_id                    = module.network.nat-route-table-id
   route_table_association_dependant = [module.network.nat-route-table-id]
-  auto_assign_public_ip_state       = true
+  auto_assign_public_ip_state       = false
+  tags = {
+    Name                               = "private-nat-subnet-1"
+    "kubernetes.io/cluster/gp-cluster" = "shared"
+    "kubernetes.io/role/internal-elb"  = 1
+  }
 }
 
 module "private-nat-subnet-2" {
@@ -47,18 +59,26 @@ module "private-nat-subnet-2" {
   vpc-id                            = module.network.vpc-id
   subnet_cidr                       = "10.1.3.0/24"
   subnet_AZ                         = "us-east-1b"
-  subnet_name                       = "private-nat-subnet-2"
   route_table_id                    = module.network.nat-route-table-id
   route_table_association_dependant = [module.network.nat-route-table-id]
-  auto_assign_public_ip_state       = true
+  auto_assign_public_ip_state       = false
+  tags = {
+    Name                               = "private-nat-subnet-2"
+    "kubernetes.io/cluster/gp-cluster" = "shared"
+    "kubernetes.io/role/internal-elb"  = 1
+  }
 }
 module "EKS" {
   source              = "./EKS"
-  Cluster_Name        = "gp-cluser"
+  Cluster_Name        = "gp-cluster"
   eks_role_arn        = module.EKS_IAM_Role.role_arn
-  cluster_subnets     = [module.private-nat-subnet-1.subnet-id, module.private-nat-subnet-2.subnet-id] # module.public-subnet-1.subnet-id, module.public-subnet-2.subnet-id, 
+  cluster_subnets     = [module.private-nat-subnet-1.subnet-id, module.private-nat-subnet-2.subnet-id, ] # module.public-subnet-1.subnet-id, module.public-subnet-2.subnet-id,
   cluster_k8s_version = "1.24"
   cluster_dependant   = [module.EKS_IAM_Role]
+  cluster_SG          = module.EKS_SG.SG_id
+
+  endpoint_private_access = true
+  endpoint_public_access  = false
 
   node_group_name = "Node-Group-1"
   NG_role_arn     = module.NG_IAM_Role.role_arn
@@ -66,6 +86,19 @@ module "EKS" {
   NG_dependant    = [module.NG_IAM_Role]
 
 
+}
+module "EKS_SG" {
+  source  = "./SecuirtGroup"
+  SG_name = "EKS-SG"
+  vpc_id  = module.network.vpc-id
+
+  in_port            = ["80", "22", "443"]
+  in_protocol        = "tcp"
+  ipv4_in_cidr_block = ["0.0.0.0/0"]
+
+  eg_port            = "0"
+  eg_protocol        = "-1"
+  ipv4_eg_cidr_block = ["0.0.0.0/0"]
 }
 module "EKS_IAM_Role" {
   source        = "./IAM"
@@ -87,33 +120,38 @@ module "NG_IAM_Role" {
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
   ]
 }
+
 module "EC2" {
   source        = "./EC2"
-  ec2_ami       = "ami-06878d265978313ca"
+  ec2_ami       = "ami-0dfcb1ef8550277af"
   ec2_type      = "t2.small"
   SG_id         = [module.Secuirty_Group.SG_id]
   ec2_subnet    = module.public-subnet-1.subnet-id
   pub_ip_state  = true
-  key_pair      = "../mamdouh-final-key"
+  key_pair      = "mamdouh-final-key"
   instance_name = "Jumphost-for-control-plane"
+  role_name     = module.EC2_IAM_Role.role_name
 }
-
+module "EC2_IAM_Role" {
+  source        = "./IAM"
+  iam_role_name = "EC2-Connect-EKS"
+  using_service = "ec2"
+  policies_arns = [
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+  ]
+}
 module "Secuirty_Group" {
   source  = "./SecuirtGroup"
-  SG_name = "First-SG"
+  SG_name = "ssh-http-SG"
   vpc_id  = module.network.vpc-id
 
-  ingress_description = "allow-HTTP-From-Anywhere"
-  in_port             = 80
-  in_protocol         = "tcp"
-  in_cidr_block       = ["0.0.0.0/0"]
+  in_port            = ["80", "22", "443"]
+  in_protocol        = "tcp"
+  ipv4_in_cidr_block = ["0.0.0.0/0"]
 
-  ssh_description = "allow-SSH-From-Anywhere"
-  ssh_port        = 22
-  ssh_protocol    = "tcp"
-
-  egress_description = "allow-all-outbound"
   eg_port            = "0"
   eg_protocol        = "-1"
-  eg_cidr_block      = ["0.0.0.0/0"]
+  ipv4_eg_cidr_block = ["0.0.0.0/0"]
 }

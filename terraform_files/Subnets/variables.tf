@@ -19,3 +19,6 @@ variable "route_table_association_dependant" {
 variable "auto_assign_public_ip_state" {
 
 }
+variable "tags" {
+  
+}

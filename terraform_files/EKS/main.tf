@@ -7,8 +7,9 @@ resource "aws_eks_cluster" "EKS-" {
 
   vpc_config {
     subnet_ids              = var.cluster_subnets
-    endpoint_private_access = true
-    endpoint_public_access  = false
+    endpoint_private_access = var.endpoint_private_access
+    endpoint_public_access  = var.endpoint_public_access
+    security_group_ids      = [var.cluster_SG]
   }
 
   depends_on = [var.cluster_dependant]
@@ -31,6 +32,36 @@ resource "aws_eks_node_group" "EKS-" {
   update_config {
     max_unavailable = 1
   }
+  # Type of Amazon Machine Image (AMI) associated with the EKS Node Group.
+  # Valid values: AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64
+  ami_type = "AL2_x86_64"
+
+  # Type of capacity associated with the EKS Node Group. 
+  # Valid values: ON_DEMAND, SPOT
+  capacity_type = "ON_DEMAND"
+
+  # Disk size in GiB for worker nodes
+  disk_size = 10
+
+  # Force version update if existing pods are unable to be drained due to a pod disruption budget issue.
+  force_update_version = false
+
+  # List of instance types associated with the EKS Node Group
+  instance_types = ["t2.micro"]
+
+  labels = {
+    role = "nodes-general"
+  }
+
+  # Kubernetes version
+  version = var.cluster_k8s_version
+
+  remote_access {
+    ec2_ssh_key = "mamdouh-final-key"
+
+  }
+
+
   lifecycle {
     replace_triggered_by = [
       # Replace `aws_appautoscaling_target` each time this instance of
