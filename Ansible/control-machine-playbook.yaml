@@ -1,0 +1,6 @@
+- name: Configuration of control machine  # play name
+  hosts: all  # aliassudo apt install dragonplayer
+  # become: true # to use sudo , use root user
+  
+  roles:
+    - roles/control-machine

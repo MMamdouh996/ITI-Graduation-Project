@@ -125,7 +125,7 @@ module "EC2" {
   source  = "./EC2"
   ec2_ami = "ami-0557a15b87f6559cf" # ubuntu
   # ec2_ami       = "ami-0dfcb1ef8550277af" # amazon linux 2
-  ec2_type         = "t2.small"
+  ec2_type         = "t2.medium"
   SG_id            = [module.Secuirty_Group.SG_id]
   ec2_subnet       = module.public-subnet-1.subnet-id
   pub_ip_state     = true

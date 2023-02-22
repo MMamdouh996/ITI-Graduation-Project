@@ -41,13 +41,13 @@ resource "aws_eks_node_group" "EKS-" {
   capacity_type = "ON_DEMAND"
 
   # Disk size in GiB for worker nodes
-  disk_size = 10
+  disk_size = 30
 
   # Force version update if existing pods are unable to be drained due to a pod disruption budget issue.
   force_update_version = false
 
   # List of instance types associated with the EKS Node Group
-  instance_types = ["t2.micro"]
+  instance_types = ["t3.medium"]
 
   labels = {
     role = "nodes-general"

@@ -9,7 +9,9 @@ resource "aws_instance" "ec2" {
   tags = {
     Name = var.instance_name
   }
-
+  # provisioner "local-exec" {
+  #   command = "echo 'Jumphost_machine ansible_user=ubuntu ansible_host=${self.public_ip}  ansible_ssh_private_key_file=./mamdouh-final-key.pem' > ../Ansible/inventory.ini "
+  # }
   provisioner "remote-exec" {
     inline = [
       "echo 'Wait untill SSH is ready' "
@@ -27,7 +29,7 @@ resource "aws_instance" "ec2" {
     # echo "ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ./${var.key_name}.pem ansible/playbook.yaml "
 
     command = <<-EOF
-      ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ./${var.key_pair}.pem ../Ansible/control-machine-playbook.yaml
+      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ../${var.key_pair}.pem ../Ansible/control-machine-playbook.yaml
       echo "JumpHost Configuration Done Using Ansible Playbook"
     EOF
   }

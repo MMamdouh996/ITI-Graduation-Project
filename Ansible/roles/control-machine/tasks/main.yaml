@@ -1,0 +1,87 @@
+- name: Download kubectl commands binary
+  get_url:
+    url: "https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.10/2023-01-30/bin/linux/amd64/kubectl"
+    dest: /home/ubuntu/
+    mode: "744"
+- name: create a "bin" dir  #task name
+  file:
+    path: /home/ubuntu/bin
+    state: directory
+- name: copying binary into bin
+  copy: 
+    remote_src: True
+    src: /home/ubuntu/kubectl
+    dest: /home/ubuntu/bin/
+    directory_mode: true
+    mode: "744"
+- name: add binary to bin
+  lineinfile: 
+    path: /home/ubuntu/.bashrc
+    line: 'export PATH=$PATH:$HOME/bin'
+    state: present
+
+#-------------------------------------------------------#
+#-------------------------------------------------------#
+#-------------------------------------------------------#
+
+- name: Download AWS CLI package
+  get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: /home/ubuntu/awscliv2.zip
+
+- name: Install Unzip package
+  become: true
+  apt:
+    name: unzip
+    state: present
+
+- name: Unzip AWS CLI package
+  # become: true
+  unarchive:
+    src: /home/ubuntu/awscliv2.zip
+    dest: /home/ubuntu/
+    remote_src: yes
+
+- name: Install AWS CLI
+  # become: true
+  command: sudo /home/ubuntu/aws/install
+  ignore_errors: true
+  # creates: /home/ubuntu/aws/aws_isntalled.txt
+
+- name: Create AWS credentials directory 
+  file:
+    path: ".aws"
+    state: directory
+
+- name: Create AWS credentials file
+  file:
+    path: ".aws/credentials"
+    state: touch
+    
+- name: Configure AWS
+  shell : |
+    echo "[default]" > /home/ubuntu/.aws/credentials
+    echo "aws_access_key_id = "{{ aws_access_key }}" " >> /home/ubuntu/.aws/credentials
+    echo "aws_secret_access_key = "{{ aws_secret_key }}"" >> /home/ubuntu/.aws/credentials
+    aws eks --region us-east-1 update-kubeconfig --name gp-cluster
+      
+       
+
+
+
+# curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.10/2023-01-30/bin/linux/amd64/kubectl
+# chmod +x ./kubectl
+# mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+# echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+# kubectl version --short --client
+
+# sudo yum remove awscli -y
+# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+# unzip awscliv2.zip
+# sudo ./aws/install
+
+# <!-- sudo ./aws/install --update
+# sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update -->
+
+# aws configure
+# aws eks --region us-east-1 update-kubeconfig --name gp-cluster
