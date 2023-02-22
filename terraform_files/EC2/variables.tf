@@ -30,3 +30,6 @@ variable "private_key_path" {
 variable "user_name" {
 
 }
+variable "eks_dependant_resource" {
+  
+}

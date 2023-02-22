@@ -134,6 +134,7 @@ module "EC2" {
   role_name        = module.EC2_IAM_Role.role_name
   private_key_path = "../mamdouh-final-key.pem"
   user_name        = "ubuntu"
+  eks_dependant_resource = module.EKS.eks
 }
 module "EC2_IAM_Role" {
   source        = "./IAM"
