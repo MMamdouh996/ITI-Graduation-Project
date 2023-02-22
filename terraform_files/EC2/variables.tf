@@ -24,3 +24,9 @@ variable "instance_name" {
 variable "role_name" {
   default = ""
 }
+variable "private_key_path" {
+
+}
+variable "user_name" {
+
+}

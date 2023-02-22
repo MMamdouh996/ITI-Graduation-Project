@@ -122,15 +122,18 @@ module "NG_IAM_Role" {
 }
 
 module "EC2" {
-  source        = "./EC2"
-  ec2_ami       = "ami-0dfcb1ef8550277af"
-  ec2_type      = "t2.small"
-  SG_id         = [module.Secuirty_Group.SG_id]
-  ec2_subnet    = module.public-subnet-1.subnet-id
-  pub_ip_state  = true
-  key_pair      = "mamdouh-final-key"
-  instance_name = "Jumphost-for-control-plane"
-  role_name     = module.EC2_IAM_Role.role_name
+  source  = "./EC2"
+  ec2_ami = "ami-0557a15b87f6559cf" # ubuntu
+  # ec2_ami       = "ami-0dfcb1ef8550277af" # amazon linux 2
+  ec2_type         = "t2.small"
+  SG_id            = [module.Secuirty_Group.SG_id]
+  ec2_subnet       = module.public-subnet-1.subnet-id
+  pub_ip_state     = true
+  key_pair         = "mamdouh-final-key"
+  instance_name    = "Jumphost-for-control-plane"
+  role_name        = module.EC2_IAM_Role.role_name
+  private_key_path = "../mamdouh-final-key.pem"
+  user_name        = "ubuntu"
 }
 module "EC2_IAM_Role" {
   source        = "./IAM"

@@ -10,14 +10,33 @@ resource "aws_instance" "ec2" {
     Name = var.instance_name
   }
 
-  #   provisioner "local-exec" {
-  #     command = var.pub_ip_state ? "echo public-instance-${var.instnace-number}-public-ip: ${self.public_ip} >> required_ips.txt" : "echo private-instance-${var.instnace-number}-private-ip: ${self.private_ip} >> required_ips.txt"
-  #   }
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Wait untill SSH is ready' "
+    ]
+    connection {
+      type        = "ssh"
+      user        = var.user_name
+      private_key = file(var.private_key_path) # file(local.private_key_path)
+      host        = aws_instance.ec2.public_ip
+    }
+  }
+  provisioner "local-exec" {
+    # command = "ansible-playbook  ansible/playbook.yaml -i ansible/inventory.ini "
+    # command = "ansible-playbook  -i ${aws_instance.ec2.public_ip}, --private-key ${var.private_key_path} control-machine-playbook.yaml"
+    # echo "ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ./${var.key_name}.pem ansible/playbook.yaml "
+
+    command = <<-EOF
+      ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ./${var.key_pair}.pem ../Ansible/control-machine-playbook.yaml
+      echo "JumpHost Configuration Done Using Ansible Playbook"
+    EOF
+  }
+
+
 
   depends_on = [
     aws_iam_instance_profile.my_instance_profile
   ]
-
 }
 
 resource "aws_iam_instance_profile" "my_instance_profile" {
