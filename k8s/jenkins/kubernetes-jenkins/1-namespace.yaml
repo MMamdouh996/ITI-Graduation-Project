@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jen-ns
+
+
+# pod to make somthing need permission , so we give it service account , 
+# we create role and connect with service account with rolebinding

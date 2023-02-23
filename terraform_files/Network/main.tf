@@ -13,7 +13,7 @@ resource "aws_internet_gateway" "igw-GP" {
   vpc_id = aws_vpc.vpc-GP.id
 
   tags = {
-    Name = "igw-tag-name"
+    Name = var.IGW_Name
   }
 }
 
@@ -25,7 +25,7 @@ resource "aws_route_table" "igw-route-GP" {
     gateway_id = aws_internet_gateway.igw-GP.id
   }
   tags = {
-    Name = "IGW_route-GP"
+    Name = var.IGW_routeT_name
   }
 }
 
@@ -38,7 +38,9 @@ resource "aws_nat_gateway" "nat-GP" {
   allocation_id = aws_eip.eip-GP.id
   subnet_id     = var.nat-subnet-id
   depends_on    = [var.nat-dependant-subnet-id]
-
+  tags = {
+    Name = var.nat_name
+  }
 }
 
 
@@ -51,6 +53,6 @@ resource "aws_route_table" "nat-route-GP" {
   }
 
   tags = {
-    Name = "NAT_route-GP"
+    Name =  var.NAT_routeT_name
   }
 }

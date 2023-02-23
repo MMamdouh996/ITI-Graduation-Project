@@ -31,7 +31,6 @@ resource "aws_instance" "ec2" {
     command = <<-EOF
       ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ../${var.key_pair}.pem ../Ansible/control-machine-playbook.yaml
       echo "JumpHost Configuration Done Using Ansible Playbook"
-      scp -i ../${var.key_pair}.pem -r ../k8s/* ${var.user_name}@${aws_instance.ec2.public_ip}:~/k8s/
     EOF
   }
 

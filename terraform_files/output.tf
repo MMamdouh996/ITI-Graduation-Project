@@ -1,3 +1,3 @@
-output "test" {
-  value = module.EKS_IAM_Role.resource_attach
+output "JumpHost-Public-IP" {
+  value = module.EC2.public-ip
 }

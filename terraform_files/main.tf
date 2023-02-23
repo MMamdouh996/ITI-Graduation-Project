@@ -8,8 +8,27 @@ module "network" {
   route_table_in_cidr     = "0.0.0.0/0"
   nat-subnet-id           = module.public-subnet-1.subnet-id
   nat-dependant-subnet-id = module.public-subnet-1
+  nat_name                = "mamdouh-nat-gp"
+  IGW_Name                = "mamdouh-IGW-gp"
+  IGW_routeT_name         = "IGW-route-GP"
+  NAT_routeT_name         = "NAT-route-GP"
 }
 
+# module "public-subnets" {
+#   source                            = "./Subnets"
+#   vpc-id                            = module.network.vpc-id
+#   for_each                          = pub_subnets_cidr
+#   subnet_cidr                       = each.key #"10.1.0.0/24"
+#   subnet_AZ                         = each.value
+#   route_table_id                    = module.network.igw-route-table-id
+#   route_table_association_dependant = [module.network.igw-route-table-id]
+#   auto_assign_public_ip_state       = true
+#   tags = {
+#     Name                                        = "public-subnet-1"
+#     "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+#     "kubernetes.io/role/elb"                    = 1
+#   }
+# }
 module "public-subnet-1" {
   source                            = "./Subnets"
   vpc-id                            = module.network.vpc-id
@@ -19,9 +38,9 @@ module "public-subnet-1" {
   route_table_association_dependant = [module.network.igw-route-table-id]
   auto_assign_public_ip_state       = true
   tags = {
-    Name                               = "public-subnet-1"
-    "kubernetes.io/cluster/gp-cluster" = "shared"
-    "kubernetes.io/role/elb"           = 1
+    Name                                        = "public-subnet-1"
+    "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+    "kubernetes.io/role/elb"                    = 1
   }
 }
 module "public-subnet-2" {
@@ -33,9 +52,9 @@ module "public-subnet-2" {
   route_table_association_dependant = [module.network.igw-route-table-id]
   auto_assign_public_ip_state       = true
   tags = {
-    Name                               = "public-subnet-2"
-    "kubernetes.io/cluster/gp-cluster" = "shared"
-    "kubernetes.io/role/elb"           = 1
+    Name                                        = "public-subnet-2"
+    "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+    "kubernetes.io/role/elb"                    = 1
   }
 }
 
@@ -48,9 +67,9 @@ module "private-nat-subnet-1" {
   route_table_association_dependant = [module.network.nat-route-table-id]
   auto_assign_public_ip_state       = false
   tags = {
-    Name                               = "private-nat-subnet-1"
-    "kubernetes.io/cluster/gp-cluster" = "shared"
-    "kubernetes.io/role/internal-elb"  = 1
+    Name                                        = "private-nat-subnet-1"
+    "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+    "kubernetes.io/role/internal-elb"           = 1
   }
 }
 
@@ -63,14 +82,14 @@ module "private-nat-subnet-2" {
   route_table_association_dependant = [module.network.nat-route-table-id]
   auto_assign_public_ip_state       = false
   tags = {
-    Name                               = "private-nat-subnet-2"
-    "kubernetes.io/cluster/gp-cluster" = "shared"
-    "kubernetes.io/role/internal-elb"  = 1
+    Name                                        = "private-nat-subnet-2"
+    "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+    "kubernetes.io/role/internal-elb"           = 1
   }
 }
 module "EKS" {
   source              = "./EKS"
-  Cluster_Name        = "gp-cluster"
+  Cluster_Name        = var.cluster-name
   eks_role_arn        = module.EKS_IAM_Role.role_arn
   cluster_subnets     = [module.private-nat-subnet-1.subnet-id, module.private-nat-subnet-2.subnet-id, ] # module.public-subnet-1.subnet-id, module.public-subnet-2.subnet-id,
   cluster_k8s_version = "1.24"
@@ -125,15 +144,15 @@ module "EC2" {
   source  = "./EC2"
   ec2_ami = "ami-0557a15b87f6559cf" # ubuntu
   # ec2_ami       = "ami-0dfcb1ef8550277af" # amazon linux 2
-  ec2_type         = "t2.medium"
-  SG_id            = [module.Secuirty_Group.SG_id]
-  ec2_subnet       = module.public-subnet-1.subnet-id
-  pub_ip_state     = true
-  key_pair         = "mamdouh-final-key"
-  instance_name    = "Jumphost-for-control-plane"
-  role_name        = module.EC2_IAM_Role.role_name
-  private_key_path = "../mamdouh-final-key.pem"
-  user_name        = "ubuntu"
+  ec2_type               = "t2.medium"
+  SG_id                  = [module.Secuirty_Group.SG_id]
+  ec2_subnet             = module.public-subnet-1.subnet-id
+  pub_ip_state           = true
+  key_pair               = "mamdouh-final-key"
+  instance_name          = "Jumphost-for-control-plane"
+  role_name              = module.EC2_IAM_Role.role_name
+  private_key_path       = "../mamdouh-final-key.pem"
+  user_name              = "ubuntu"
   eks_dependant_resource = module.EKS.eks
 }
 module "EC2_IAM_Role" {

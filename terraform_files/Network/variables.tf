@@ -20,3 +20,15 @@ variable "enable_dns_hostnames" {
 variable "enable_dns_support" {
 
 }
+variable "nat_name" {
+
+}
+variable "IGW_Name" {
+
+}
+variable "IGW_routeT_name" {
+
+}
+variable "NAT_routeT_name" {
+
+}

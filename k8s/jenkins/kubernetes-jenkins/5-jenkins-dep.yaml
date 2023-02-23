@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: jen-ns
+  labels:
+    app: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins-admin
+      containers:
+      - name: nfs-client-provisioner
+        image: quay.io/external_storage/nfs-client-provisioner:latest
+        volumeMounts:
+        - name: nfs-client-root
+          mountPath: /persistentvolumes
+        env:
+        - name: PROVISIONER_NAME
+          value: efs-storage
+        - name: NFS_SERVER
+          value: 10.1.0.65	
+        - name: NFS_PATH
+          value: /
+      volumes:
+      - name: nfs-client-root
+        nfs:
+          server: 10.1.0.65	
+          path: /
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#       containers:
+#         - name: jenkins
+#           image: jenkins/jenkins:lts
+#           ports:
+#             # - name: httpport
+#             -  containerPort: 8080
+#             # - name: jnlpport
+#             #   containerPort: 50000
+#       #     volumeMounts:
+#       #       - name: jenkins-data
+#       #         mountPath: /var/jenkins_home
+#       # volumes:
+#       #   - name: jenkins-data
+#       #     persistentVolumeClaim:
+#       #         claimName: jenkins-pv-claim              
+# ---
