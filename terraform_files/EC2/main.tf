@@ -9,12 +9,10 @@ resource "aws_instance" "ec2" {
   tags = {
     Name = var.instance_name
   }
-  # provisioner "local-exec" {
-  #   command = "echo 'Jumphost_machine ansible_user=ubuntu ansible_host=${self.public_ip}  ansible_ssh_private_key_file=./mamdouh-final-key.pem' > ../Ansible/inventory.ini "
-  # }
+
   provisioner "remote-exec" {
     inline = [
-      "echo 'Wait untill SSH is ready' ;mkdir ~/k8s "
+      "echo 'Wait untill SSH is ready' "
     ]
     connection {
       type        = "ssh"
@@ -24,18 +22,22 @@ resource "aws_instance" "ec2" {
     }
   }
   provisioner "local-exec" {
-    # command = "ansible-playbook  ansible/playbook.yaml -i ansible/inventory.ini "
-    # command = "ansible-playbook  -i ${aws_instance.ec2.public_ip}, --private-key ${var.private_key_path} control-machine-playbook.yaml"
-    # echo "ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ./${var.key_name}.pem ansible/playbook.yaml "
-
     command = <<-EOF
-      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  -u ${var.user_name} -i ${aws_instance.ec2.public_ip}, --private-key ../${var.key_pair}.pem ../Ansible/control-machine-playbook.yaml
+
+      echo "Jumphost_machine ansible_user=${var.user_name} ansible_host=${self.public_ip}  ansible_ssh_private_key_file=../mamdouh-final-key.pem" > ${var.jumphost_inventory_file_path}
+      echo "workernode ansible_user=${var.node_username} ansible_host=${var.node_instance_ip}  ansible_ssh_private_key_file=../mamdouh-final-key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"ssh -i ../mamdouh-final-key.pem -W %h:%p -q ${var.user_name}@${self.public_ip} \"' " > ${var.worker_inventory_file_path}
+      echo "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.worker_playbook_file_path} -i ${var.worker_inventory_file_path}" > ansible-commands.sh
+      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.worker_playbook_file_path} -i ${var.worker_inventory_file_path}
+      echo "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.jumphost_playbook_file_path} -i ${var.jumphost_inventory_file_path}" >> ansible-commands.sh
+      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.jumphost_playbook_file_path} -i ${var.jumphost_inventory_file_path}
+      
       echo "JumpHost Configuration Done Using Ansible Playbook"
+
     EOF
   }
-
-
-
+  # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.worker_playbook_file_path} -i ${var.worker_inventory_file_path}
+  # sleep 10
+  # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.jumphost_playbook_file_path} -i ${var.jumphost_inventory_file_path}
   depends_on = [
     aws_iam_instance_profile.my_instance_profile, var.eks_dependant_resource
   ]

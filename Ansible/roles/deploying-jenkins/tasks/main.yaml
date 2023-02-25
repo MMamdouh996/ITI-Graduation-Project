@@ -15,23 +15,37 @@
     path: /home/ubuntu/.bashrc
     line: "alias k='kubectl' "
 
-- name: Copying deployment script
-  copy:
-    src: /home/mohamedmamdouh/iti-newpart/Graduation_Project/k8s/jenkins/deploy-script.sh
-    dest: /home/ubuntu/k8s/
-    mode: "755" 
+# - name: Copying deployment script
+#   copy:
+#     src: /home/mohamedmamdouh/iti-newpart/Graduation_Project/k8s/jenkins/deploy-script.sh
+#     dest: /home/ubuntu/k8s/
+#     mode: "755" 
 
-- name: Execute script with interpreter
+# - name: Copying cleaning script
+#   copy:
+#     src: /home/mohamedmamdouh/iti-newpart/Graduation_Project/k8s/jenkins/delete-script.sh
+#     dest: /home/ubuntu/k8s/
+#     mode: "755" 
+
+- name: Execute script with using Ansible
   script: 
     cmd: /home/mohamedmamdouh/iti-newpart/Graduation_Project/k8s/jenkins/deploy-script.sh
     chdir: /home/ubuntu/k8s/
+  register: script_status
 
     # interpreter: /bin/bash
 
 # - name: running deployment script
 #   # become: "ubuntu"
-#   command: . /home/ubuntu/k8s/deploy-script.sh
+#   shell: |
+#     echo "Done" > /home/ubuntu/start.script
+#     bash /home/ubuntu/k8s/deploy-script.sh
+#     echo "Done" > /home/ubuntu/done.script
+#   register: script
 
+- name: Show bucket details
+  debug:
+    var: script_status
 # - name: kubectl command
 #   k8s:
 #     name: test dep

@@ -31,5 +31,23 @@ variable "user_name" {
 
 }
 variable "eks_dependant_resource" {
-  
+
+}
+variable "jumphost_inventory_file_path" {
+
+}
+variable "worker_inventory_file_path" {
+
+}
+variable "jumphost_playbook_file_path" {
+
+}
+variable "worker_playbook_file_path" {
+
+}
+variable "node_instance_ip" {
+
+}
+variable "node_username" {
+
 }

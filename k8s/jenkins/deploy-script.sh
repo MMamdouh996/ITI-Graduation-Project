@@ -1,27 +1,14 @@
 #!/bin/bash
-kubectl apply -f 1-namespace.yaml ;
-sleep 5 ;
-kubectl apply -f 2-serviceAccount.yaml ;
-sleep 5 ;
-kubectl apply -f 3-ClusterRole.yaml ;
-sleep 5 ;
-kubectl apply -f 4-ClusterRoleBinding.yaml ;
-sleep 5 ;
-kubectl apply -f 5-jenkins-dep.yaml ;
-sleep 5 ;
-kubectl apply -f 6-service.yaml ;
-sleep 5 ;
-kubectl apply -f /home/ubuntu/k8s/1-namespace.yaml ;
-sleep 5 ;
-kubectl apply -f /home/ubuntu/k8s/2-serviceAccount.yaml ;
-sleep 5 ;
-kubectl apply -f /home/ubuntu/k8s/3-ClusterRole.yaml ;
-sleep 5 ;
-kubectl apply -f /home/ubuntu/k8s/4-ClusterRoleBinding.yaml ;
-sleep 5 ;
-kubectl apply -f /home/ubuntu/k8s/5-jenkins-dep.yaml ;
-sleep 5 ;
-kubectl apply -f /home/ubuntu/k8s/6-service.yaml ;
-sleep 5 ;
-echo "DONE" > script_runned_succefully.finish ;
-/home/ubuntu/k8s/
+echo "Done" > /home/ubuntu/start.script
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/1-namespace.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/2-serviceAccount.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/3-ClusterRole.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/4-ClusterRoleBinding.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/5-pv-volume.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/6-pv-claim.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/7-jenkins-dep.yaml ;
+/home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/8-service.yaml ;
+# /home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/9-app-deployment.yaml ;
+# /home/ubuntu/bin/kubectl apply -f /home/ubuntu/k8s/10-app service.yaml;
+echo "Done" > /home/ubuntu/end.script
+cat /home/ubuntu/start.script /home/ubuntu/end.script

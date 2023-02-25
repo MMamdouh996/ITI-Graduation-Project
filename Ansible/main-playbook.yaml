@@ -2,7 +2,6 @@
 #----------------------------------------------------------------------------------------#
 - name: Manage Terraform statelock and tfstate file
   hosts: localhost
-  gather_facts: no
-
+  gather_facts: false
   roles:
     - roles/terraform
