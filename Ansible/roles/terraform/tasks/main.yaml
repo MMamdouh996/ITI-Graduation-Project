@@ -39,7 +39,7 @@
     var: dynamodb_table
     
 #----------------------------------------------------------------------------------------------------------------------#
-#-------------------we can use the below task to run terraform but i would rather run it using the terminal------------#
+#-------------------we can use the below task to run terraform but i would rather run it using the terminal ^_^ ------------#
 #----------------------------------------------------------------------------------------------------------------------#
 
 # - name: Run terraform apply 

@@ -25,7 +25,7 @@ resource "aws_instance" "ec2" {
     command = <<-EOF
 
       echo "Jumphost_machine ansible_user=${var.user_name} ansible_host=${self.public_ip}  ansible_ssh_private_key_file=../mamdouh-final-key.pem" > ${var.jumphost_inventory_file_path}
-      echo "workernode ansible_user=${var.node_username} ansible_host=${var.node_instance_ip}  ansible_ssh_private_key_file=../mamdouh-final-key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"ssh -i ../mamdouh-final-key.pem -W %h:%p -q ${var.user_name}@${self.public_ip} \"' " > ${var.worker_inventory_file_path}
+      echo "workernode ansible_user=${var.node_username} ansible_host=${var.node_instance_ip}  ansible_ssh_private_key_file=../mamdouh-final-key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"ssh -i ../mamdouh-final-key.pem -W %h:%p -q ${var.user_name}@${self.public_ip} -o StrictHostKeyChecking=no \"' " > ${var.worker_inventory_file_path}
       echo "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.worker_playbook_file_path} -i ${var.worker_inventory_file_path}" > ansible-commands.sh
       ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.worker_playbook_file_path} -i ${var.worker_inventory_file_path}
       echo "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  ${var.jumphost_playbook_file_path} -i ${var.jumphost_inventory_file_path}" >> ansible-commands.sh

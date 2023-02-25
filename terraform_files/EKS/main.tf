@@ -33,13 +33,6 @@ resource "aws_eks_node_group" "EKS" {
     max_unavailable = 1
   }
 
-
-  # launch_template {
-  #   name    = aws_launch_template.node_group-launch_template.name
-  #   version = aws_launch_template.node_group-launch_template.latest_version
-  # }
-
-
   # Type of Amazon Machine Image (AMI) associated with the EKS Node Group.
   # Valid values: AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64
   ami_type = "AL2_x86_64"
@@ -57,11 +50,6 @@ resource "aws_eks_node_group" "EKS" {
   # List of instance types associated with the EKS Node Group
   instance_types = ["t3.medium"]
 
-
-
-
-
-
   labels = {
     role = "nodes-general"
   }
@@ -73,7 +61,6 @@ resource "aws_eks_node_group" "EKS" {
     ec2_ssh_key = "mamdouh-final-key"
 
   }
-
 
   lifecycle {
     replace_triggered_by = [
@@ -91,22 +78,6 @@ resource "aws_eks_node_group" "EKS" {
   # }
 
 }
-
-
-# resource "aws_launch_template" "node_group-launch_template" {
-#   name     = "Example_eks_launch_template"
-#   image_id = "ami-0d5cbb67678bc879c"
-
-#   tag_specifications {
-#     resource_type = "instance"
-
-#     tags = {
-#       Name = "EKS-MANAGED-NODE"
-#     }
-#   }
-# }
-
-
 
 data "aws_instances" "my_worker_nodes" {
   instance_tags = {
