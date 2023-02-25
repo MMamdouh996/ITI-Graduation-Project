@@ -1,0 +1,6 @@
+- name: Configuration of node machine  # play name
+  hosts: workernode   # aliassudo apt install dragonplayer
+  become: true # to use sudo , use root user
+  gather_facts: false
+  roles:
+    - roles/worker-node

@@ -37,3 +37,12 @@
 - name: Show table details
   debug:
     var: dynamodb_table
+    
+#----------------------------------------------------------------------------------------------------------------------#
+#-------------------we can use the below task to run terraform but i would rather run it using the terminal------------#
+#----------------------------------------------------------------------------------------------------------------------#
+
+# - name: Run terraform apply 
+#   command:
+#     cmd: terraform apply --auto-approve
+#     chdir: /home/mohamedmamdouh/iti-newpart/Graduation_Project/terraform_files

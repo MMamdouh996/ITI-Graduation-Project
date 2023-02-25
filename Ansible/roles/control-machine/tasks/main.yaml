@@ -3,6 +3,7 @@
     url: "https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.10/2023-01-30/bin/linux/amd64/kubectl"
     dest: /home/ubuntu/
     mode: "744"
+    
 - name: create a "bin" dir  #task name
   file:
     path: /home/ubuntu/bin
@@ -45,10 +46,8 @@
     remote_src: yes
 
 - name: Install AWS CLI
-  # become: true
   command: sudo /home/ubuntu/aws/install
   ignore_errors: true
-  # creates: /home/ubuntu/aws/aws_isntalled.txt
 
 - name: Create AWS credentials directory 
   file:

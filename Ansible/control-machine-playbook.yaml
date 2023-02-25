@@ -1,7 +1,7 @@
 - name: Configuration of control machine  # play name
-  hosts: all  # aliassudo apt install dragonplayer
+  hosts: Jumphost_machine   # aliassudo apt install dragonplayer
   # become: true # to use sudo , use root user
   gather_facts: false
   roles:
-    # - roles/control-machine
+    - roles/control-machine
     - roles/deploying-jenkins

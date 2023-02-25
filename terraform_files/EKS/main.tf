@@ -24,14 +24,22 @@ resource "aws_eks_node_group" "EKS" {
   subnet_ids      = var.NG_subnets_ids
 
   scaling_config {
-    desired_size = 2
-    max_size     = 4
+    desired_size = 1
+    max_size     = 2
     min_size     = 1
   }
 
   update_config {
     max_unavailable = 1
   }
+
+
+  # launch_template {
+  #   name    = aws_launch_template.node_group-launch_template.name
+  #   version = aws_launch_template.node_group-launch_template.latest_version
+  # }
+
+
   # Type of Amazon Machine Image (AMI) associated with the EKS Node Group.
   # Valid values: AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64
   ami_type = "AL2_x86_64"
@@ -48,6 +56,11 @@ resource "aws_eks_node_group" "EKS" {
 
   # List of instance types associated with the EKS Node Group
   instance_types = ["t3.medium"]
+
+
+
+
+
 
   labels = {
     role = "nodes-general"
@@ -73,7 +86,34 @@ resource "aws_eks_node_group" "EKS" {
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   # depends_on = [aws_eks_cluster.EKS]
   depends_on = [var.NG_dependant]
+  # tags = {
+  #   Name = "EKS-MANAGED-NODE"
+  # }
 
+}
+
+
+# resource "aws_launch_template" "node_group-launch_template" {
+#   name     = "Example_eks_launch_template"
+#   image_id = "ami-0d5cbb67678bc879c"
+
+#   tag_specifications {
+#     resource_type = "instance"
+
+#     tags = {
+#       Name = "EKS-MANAGED-NODE"
+#     }
+#   }
+# }
+
+
+
+data "aws_instances" "my_worker_nodes" {
+  instance_tags = {
+    "eks:cluster-name" = "gp-cluster"
+  }
+  instance_state_names = ["running"]
+  depends_on           = [aws_eks_node_group.EKS]
 }
 #amiType
 # capacityType =ON_DEMAND
