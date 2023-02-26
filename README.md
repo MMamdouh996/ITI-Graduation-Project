@@ -23,15 +23,14 @@ Deploy the backend application on a Kubernetes cluster using a CI/CD Jenkins pip
 ![Architecture Diagram](./ProofOfWork_ScreenShots/Archietecture.jpg)
 
 ---
-
 ## Terraform
 
 Creating full infra:
 
-- Networks: VPC, Subnets, NATs, IGW
-- EKS Cluster, Node Group
-- Jumphost Machine to control the EKS from the inside of the VPC
-- <https://github.com/MMamdouh996/ITI-Graduation-Project>
+    - Networks: VPC, Subnets, NATs, IGW (4 subnet existed to give the option to create Internal and External LBs)
+    - EKS Cluster, Node Group
+    - Jumphost Machine to control the EKS from the inside of the VPC
+    - <https://github.com/MMamdouh996/ITI-Graduation-Project>
 
 ## Ansible
 
@@ -93,3 +92,6 @@ To Dockerize the Jenkins base image and the required packages to be deployed and
 ![Architecture Diagram](./ProofOfWork_ScreenShots/19.png)
 ## 16. the app working well
 ![Architecture Diagram](./ProofOfWork_ScreenShots/20.png)
+
+---
+
