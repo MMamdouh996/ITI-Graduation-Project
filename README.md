@@ -25,12 +25,12 @@ Deploy the backend application on a Kubernetes cluster using a CI/CD Jenkins pip
 ---
 ## Terraform
 
-Creating full infra:
+Creating full infra :
 
-    - Networks: VPC, Subnets, NATs, IGW (4 subnet existed to give the option to create Internal and External LBs)
-    - EKS Cluster, Node Group
-    - Jumphost Machine to control the EKS from the inside of the VPC
-    - <https://github.com/MMamdouh996/ITI-Graduation-Project>
+- Networks: VPC, Subnets, NATs, IGW (4 subnet existed to give the option to create Internal and External LBs)
+- EKS Cluster, Node Group
+- Jumphost Machine to control the EKS from the inside of the VPC
+- <https://github.com/MMamdouh996/ITI-Graduation-Project>
 
 ## Ansible
 
